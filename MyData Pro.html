@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<!-- saved from url=(0065)file:///C:/Users/admin/AppData/Local/Temp/Rar$EX54.812/index.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1a56a0">
+<meta name="description" content="MyData Pro - Secure Personal Information Manager">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="MyData Pro">
+<link rel="manifest" href="file:///C:/Users/admin/AppData/Local/Temp/Rar$EX54.812/manifest.json">
+<title>MyData Pro</title>
+<style>
+  :root {
+    --blue-dark: #1a3c6e;
+    --blue-main: #1a56a0;
+    --blue-mid: #2471c8;
+    --blue-light: #e8f1fb;
+    --blue-accent: #4a9eff;
+    --white: #ffffff;
+    --grey-light: #f4f7fc;
+    --grey-mid: #d0dce8;
+    --grey-text: #4a5568;
+    --text-dark: #1a2332;
+    --red: #c0392b;
+    --green: #1a7a4a;
+    --orange: #d4700a;
+    --shadow: 0 2px 12px rgba(26,86,160,0.10);
+    --shadow-card: 0 4px 18px rgba(26,86,160,0.13);
+    --radius: 14px;
+    --font: 'Segoe UI', Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font); background: var(--grey-light); color: var(--text-dark); min-height: 100vh; font-size: 17px; }
+
+  /* ===== SCREENS ===== */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* ===== LOGIN ===== */
+  #loginScreen { background: linear-gradient(145deg, var(--blue-dark) 0%, var(--blue-main) 60%, var(--blue-mid) 100%); align-items: center; justify-content: center; padding: 24px; }
+  .login-card { background: var(--white); border-radius: 22px; padding: 40px 32px 36px; width: 100%; max-width: 400px; box-shadow: 0 8px 40px rgba(0,0,0,0.22); }
+  .login-logo { text-align: center; margin-bottom: 28px; }
+  .login-logo .logo-icon { width: 72px; height: 72px; background: linear-gradient(135deg, var(--blue-main), var(--blue-mid)); border-radius: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 36px; margin-bottom: 12px; box-shadow: 0 4px 16px rgba(26,86,160,0.3); }
+  .login-logo h1 { font-size: 26px; font-weight: 800; color: var(--blue-dark); letter-spacing: -0.5px; }
+  .login-logo p { font-size: 14px; color: var(--grey-text); margin-top: 4px; }
+  .form-group { margin-bottom: 18px; }
+  .form-group label { display: block; font-size: 14px; font-weight: 600; color: var(--grey-text); margin-bottom: 7px; text-transform: uppercase; letter-spacing: 0.4px; }
+  .input-wrap { position: relative; }
+  .input-wrap input { width: 100%; padding: 15px 50px 15px 16px; border: 2px solid var(--grey-mid); border-radius: 10px; font-size: 17px; color: var(--text-dark); background: var(--grey-light); transition: border-color 0.2s; }
+  .input-wrap input:focus { outline: none; border-color: var(--blue-main); background: var(--white); }
+  .toggle-pw { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 20px; color: var(--grey-text); padding: 4px; }
+  .hint-text { font-size: 13px; color: var(--grey-text); margin-top: 5px; }
+  .btn-primary { width: 100%; padding: 17px; background: linear-gradient(135deg, var(--blue-main), var(--blue-mid)); color: var(--white); border: none; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer; letter-spacing: 0.3px; transition: opacity 0.2s, transform 0.1s; }
+  .btn-primary:active { opacity: 0.88; transform: scale(0.99); }
+  .link-btn { background: none; border: none; color: var(--blue-main); font-size: 14px; cursor: pointer; text-decoration: underline; margin-top: 14px; display: block; text-align: center; }
+  .login-error { color: var(--red); font-size: 14px; text-align: center; margin-bottom: 12px; display: none; padding: 8px; background: #fdecea; border-radius: 8px; }
+
+  /* ===== HEADER ===== */
+  .app-header { background: linear-gradient(135deg, var(--blue-dark), var(--blue-main)); color: var(--white); padding: 16px 20px 14px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 10px rgba(0,0,0,0.15); position: sticky; top: 0; z-index: 100; }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .back-btn { background: rgba(255,255,255,0.18); border: none; color: var(--white); width: 38px; height: 38px; border-radius: 10px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .header-title { font-size: 20px; font-weight: 700; }
+  .header-right { display: flex; gap: 8px; }
+  .icon-btn { background: rgba(255,255,255,0.18); border: none; color: var(--white); width: 38px; height: 38px; border-radius: 10px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+  /* ===== CONTENT ===== */
+  .content { flex: 1; padding: 20px 16px 90px; max-width: 700px; width: 100%; margin: 0 auto; }
+
+  /* ===== DASHBOARD ===== */
+  .dashboard-welcome { background: linear-gradient(135deg, var(--blue-main), var(--blue-mid)); color: var(--white); border-radius: var(--radius); padding: 22px 20px 18px; margin-bottom: 22px; position: relative; overflow: hidden; }
+  .dashboard-welcome::after { content: '🛡️'; position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-size: 52px; opacity: 0.18; }
+  .dashboard-welcome h2 { font-size: 22px; font-weight: 800; }
+  .dashboard-welcome p { font-size: 14px; opacity: 0.88; margin-top: 5px; }
+  .cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .dash-card { background: var(--white); border-radius: var(--radius); padding: 22px 16px 18px; box-shadow: var(--shadow-card); cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; border: 2px solid transparent; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+  .dash-card:hover, .dash-card:active { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(26,86,160,0.18); border-color: var(--blue-accent); }
+  .dash-card .card-icon { font-size: 34px; }
+  .dash-card .card-label { font-size: 15px; font-weight: 700; color: var(--blue-dark); line-height: 1.25; }
+  .dash-card .card-sub { font-size: 12px; color: var(--grey-text); margin-top: 2px; }
+  .dash-card.full-width { grid-column: span 2; flex-direction: row; align-items: center; gap: 16px; }
+
+  /* ===== SECTION SCREENS ===== */
+  .section-content { display: flex; flex-direction: column; gap: 16px; }
+  .info-card { background: var(--white); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+  .info-card h3 { font-size: 16px; font-weight: 700; color: var(--blue-dark); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 2px solid var(--blue-light); }
+  .field-row { display: flex; flex-direction: column; gap: 4px; margin-bottom: 14px; }
+  .field-row:last-child { margin-bottom: 0; }
+  .field-label { font-size: 12px; font-weight: 600; color: var(--grey-text); text-transform: uppercase; letter-spacing: 0.4px; }
+  .field-value { font-size: 16px; color: var(--text-dark); font-weight: 500; }
+  .field-value.empty { color: var(--grey-text); font-style: italic; font-size: 14px; }
+
+  /* ===== FORM ===== */
+  .form-card { background: var(--white); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+  .form-row { margin-bottom: 16px; }
+  .form-row label { display: block; font-size: 13px; font-weight: 600; color: var(--grey-text); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 6px; }
+  .form-row input, .form-row select, .form-row textarea { width: 100%; padding: 13px 15px; border: 2px solid var(--grey-mid); border-radius: 10px; font-size: 16px; color: var(--text-dark); font-family: var(--font); transition: border-color 0.2s; background: var(--white); }
+  .form-row input:focus, .form-row select:focus, .form-row textarea:focus { outline: none; border-color: var(--blue-main); }
+  .form-row textarea { resize: vertical; min-height: 90px; }
+  .form-row select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%234a5568' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; }
+  .form-actions { display: flex; gap: 12px; margin-top: 10px; }
+  .btn-save { flex: 1; padding: 15px; background: linear-gradient(135deg, var(--green), #22a060); color: var(--white); border: none; border-radius: 12px; font-size: 17px; font-weight: 700; cursor: pointer; }
+  .btn-cancel { padding: 15px 22px; background: var(--grey-light); color: var(--grey-text); border: 2px solid var(--grey-mid); border-radius: 12px; font-size: 17px; font-weight: 600; cursor: pointer; }
+  .btn-danger { padding: 15px; background: var(--white); color: var(--red); border: 2px solid var(--red); border-radius: 12px; font-size: 17px; font-weight: 600; cursor: pointer; }
+  .edit-fab { position: fixed; bottom: 88px; right: 20px; width: 58px; height: 58px; background: linear-gradient(135deg, var(--blue-main), var(--blue-mid)); border: none; border-radius: 50%; color: white; font-size: 26px; cursor: pointer; box-shadow: 0 4px 20px rgba(26,86,160,0.4); z-index: 50; display: flex; align-items: center; justify-content: center; }
+
+  /* ===== FAMILY LIST ===== */
+  .list-item { background: var(--white); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 14px; cursor: pointer; transition: transform 0.15s; margin-bottom: 10px; }
+  .list-item:hover { transform: translateX(3px); }
+  .list-avatar { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--blue-main), var(--blue-accent)); display: flex; align-items: center; justify-content: center; color: var(--white); font-size: 20px; font-weight: 700; flex-shrink: 0; }
+  .list-info { flex: 1; }
+  .list-info .name { font-size: 17px; font-weight: 700; color: var(--text-dark); }
+  .list-info .sub { font-size: 13px; color: var(--grey-text); margin-top: 2px; }
+  .list-arrow { font-size: 20px; color: var(--grey-mid); }
+  .add-btn { display: flex; align-items: center; justify-content: center; gap: 10px; background: var(--blue-light); border: 2px dashed var(--blue-accent); border-radius: var(--radius); padding: 18px; color: var(--blue-main); font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 4px; }
+
+  /* ===== DOCUMENTS ===== */
+  .doc-item { background: var(--white); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+  .doc-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+  .doc-icon.pdf { background: #fdecea; }
+  .doc-icon.img { background: #e8f5e9; }
+  .doc-info { flex: 1; }
+  .doc-name { font-size: 16px; font-weight: 700; color: var(--text-dark); }
+  .doc-meta { font-size: 12px; color: var(--grey-text); margin-top: 3px; }
+  .doc-actions { display: flex; gap: 8px; }
+  .doc-btn { background: none; border: 1px solid var(--grey-mid); border-radius: 8px; padding: 6px 10px; font-size: 13px; cursor: pointer; color: var(--grey-text); }
+
+  /* ===== SEARCH ===== */
+  .search-bar-wrap { background: var(--white); border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--shadow); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+  .search-bar-wrap input { flex: 1; border: none; font-size: 17px; outline: none; color: var(--text-dark); }
+  .search-icon { font-size: 22px; color: var(--grey-text); }
+  .search-result { background: var(--white); border-radius: 12px; padding: 14px 16px; box-shadow: var(--shadow); margin-bottom: 8px; }
+  .search-result .res-cat { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--blue-main); margin-bottom: 4px; }
+  .search-result .res-name { font-size: 16px; font-weight: 600; color: var(--text-dark); }
+  .search-result .res-detail { font-size: 13px; color: var(--grey-text); margin-top: 2px; }
+  .search-empty { text-align: center; color: var(--grey-text); padding: 40px 20px; font-size: 16px; }
+
+  /* ===== NOTES ===== */
+  .note-item { background: var(--white); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow); margin-bottom: 10px; cursor: pointer; }
+  .note-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .note-title { font-size: 16px; font-weight: 700; color: var(--text-dark); }
+  .note-badge { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+  .badge-general { background: #e8f1fb; color: var(--blue-main); }
+  .badge-medical { background: #fdecea; color: var(--red); }
+  .badge-insurance { background: #fff3e0; color: var(--orange); }
+  .badge-personal { background: #f3e5f5; color: #7b1fa2; }
+  .badge-important { background: #e8f5e9; color: var(--green); }
+  .note-desc { font-size: 14px; color: var(--grey-text); }
+
+  /* ===== BACKUP ===== */
+  .backup-card { background: var(--white); border-radius: var(--radius); padding: 24px 20px; box-shadow: var(--shadow); text-align: center; }
+  .backup-icon { font-size: 52px; margin-bottom: 14px; }
+  .backup-card h3 { font-size: 19px; font-weight: 700; color: var(--blue-dark); margin-bottom: 8px; }
+  .backup-card p { font-size: 14px; color: var(--grey-text); margin-bottom: 20px; }
+  .btn-backup { width: 100%; padding: 16px; border-radius: 12px; font-size: 17px; font-weight: 700; cursor: pointer; border: none; margin-bottom: 10px; }
+  .btn-backup.blue { background: linear-gradient(135deg, var(--blue-main), var(--blue-mid)); color: white; }
+  .btn-backup.green { background: linear-gradient(135deg, var(--green), #22a060); color: white; }
+  .btn-backup.orange { background: linear-gradient(135deg, var(--orange), #e67e22); color: white; }
+
+  /* ===== BOTTOM NAV ===== */
+  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); border-top: 2px solid var(--grey-mid); display: flex; z-index: 100; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); }
+  .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 10px 4px 8px; cursor: pointer; color: var(--grey-text); font-size: 11px; font-weight: 600; gap: 3px; border: none; background: none; transition: color 0.2s; }
+  .nav-item.active, .nav-item:hover { color: var(--blue-main); }
+  .nav-icon { font-size: 22px; }
+
+  /* ===== MODAL ===== */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(10,20,40,0.55); z-index: 200; align-items: flex-end; justify-content: center; }
+  .modal-overlay.show { display: flex; }
+  .modal { background: var(--white); border-radius: 22px 22px 0 0; width: 100%; max-width: 500px; padding: 28px 24px 32px; max-height: 90vh; overflow-y: auto; }
+  .modal h3 { font-size: 20px; font-weight: 800; color: var(--blue-dark); margin-bottom: 18px; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 18px; }
+
+  /* ===== TOAST ===== */
+  .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--text-dark); color: var(--white); padding: 12px 24px; border-radius: 30px; font-size: 15px; font-weight: 600; opacity: 0; transition: all 0.3s; z-index: 500; white-space: nowrap; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ===== PHOTO UPLOAD ===== */
+  .photo-upload-area { border: 3px dashed var(--blue-accent); border-radius: 14px; padding: 30px; text-align: center; cursor: pointer; background: var(--blue-light); }
+  .photo-upload-area img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; }
+  .photo-upload-area p { color: var(--blue-main); font-weight: 600; font-size: 15px; }
+  .photo-upload-area input { display: none; }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 400px) {
+    .cards-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .dash-card { padding: 16px 12px 14px; }
+    .dash-card .card-icon { font-size: 28px; }
+    .dash-card .card-label { font-size: 13px; }
+  }
+  @media (min-width: 700px) {
+    .cards-grid { grid-template-columns: repeat(3, 1fr); }
+    .dash-card.full-width { grid-column: span 3; }
+    .bottom-nav { left: 50%; right: auto; transform: translateX(-50%); width: 700px; border-radius: 22px 22px 0 0; }
+  }
+
+  /* ===== INSTALL BANNER ===== */
+  .install-banner { background: linear-gradient(135deg, var(--blue-dark), var(--blue-main)); color: white; padding: 14px 18px; display: flex; align-items: center; gap: 12px; position: fixed; bottom: 70px; left: 10px; right: 10px; border-radius: 14px; box-shadow: 0 4px 24px rgba(0,0,0,0.2); z-index: 150; display: none; }
+  .install-banner p { flex: 1; font-size: 14px; font-weight: 600; }
+  .install-banner button { background: white; color: var(--blue-main); border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 14px; }
+  .install-close { background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<!-- ========== LOGIN SCREEN ========== -->
+<div id="loginScreen" class="screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-icon">🛡️</div>
+      <h1>MyData Pro</h1>
+      <p>Your personal information, safe &amp; private</p>
+    </div>
+    <div id="loginError" class="login-error" style="display: none;">Incorrect password. Please try again.</div>
+    <div id="loginForm">
+      <div class="form-group">
+        <label>Master Password</label>
+        <div class="input-wrap">
+          <input type="text" id="loginPassword" placeholder="Enter your password" autocomplete="off">
+          <button class="toggle-pw" onclick="togglePw(&#39;loginPassword&#39;, this)">🙈</button>
+        </div>
+      </div>
+      <div id="loginHint" class="hint-text" style="margin-bottom:14px;"></div>
+      <button class="btn-primary" onclick="doLogin()">🔓 Unlock</button>
+      <button class="link-btn" onclick="showHint()">Forgot password? Show hint</button>
+    </div>
+    <div id="setupForm" style="display:none;">
+      <p style="font-size:15px;color:var(--blue-dark);font-weight:700;margin-bottom:16px;">Welcome! Set up your master password.</p>
+      <div class="form-group">
+        <label>Create Password</label>
+        <div class="input-wrap">
+          <input type="password" id="setupPw" placeholder="Minimum 4 characters">
+          <button class="toggle-pw" onclick="togglePw(&#39;setupPw&#39;, this)">👁️</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <div class="input-wrap">
+          <input type="password" id="setupPw2" placeholder="Re-enter password">
+          <button class="toggle-pw" onclick="togglePw(&#39;setupPw2&#39;, this)">👁️</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Password Hint <span style="font-weight:400">(optional)</span></label>
+        <div class="input-wrap">
+          <input type="text" id="setupHint" placeholder="e.g. Name of first pet">
+        </div>
+      </div>
+      <button class="btn-primary" onclick="doSetup()">✅ Create Password &amp; Start</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MAIN APP ========== -->
+<div id="appScreen" class="screen active">
+
+  <!-- HEADER -->
+  <div class="app-header" id="appHeader">
+    <div class="header-left">
+      <button class="back-btn" id="backBtn" onclick="goBack()" style="display:none">◀</button>
+      <span class="header-title" id="headerTitle">MyData Pro</span>
+    </div>
+    <div class="header-right">
+      <button class="icon-btn" onclick="showSearch()" title="Search">🔍</button>
+      <button class="icon-btn" onclick="doLogout()" title="Logout">🚪</button>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashView" class="content" style="">
+    <div class="dashboard-welcome">
+      <h2 id="welcomeMsg">Good Evening! 👋</h2>
+      <p>Your data is safe and encrypted on this device.</p>
+    </div>
+    <div class="cards-grid">
+      <div class="dash-card" onclick="showSection(&#39;personal&#39;)">
+        <span class="card-icon">👤</span>
+        <span class="card-label">Personal Info</span>
+        <span class="card-sub">Profile &amp; ID</span>
+      </div>
+      <div class="dash-card" onclick="showSection(&#39;medical&#39;)">
+        <span class="card-icon">🏥</span>
+        <span class="card-label">Medical &amp; Insurance</span>
+        <span class="card-sub">Health records</span>
+      </div>
+      <div class="dash-card" onclick="showSection(&#39;family&#39;)">
+        <span class="card-icon">👨‍👩‍👧‍👦</span>
+        <span class="card-label">Family Contacts</span>
+        <span class="card-sub">Members &amp; numbers</span>
+      </div>
+      <div class="dash-card" onclick="showSection(&#39;emergency&#39;)">
+        <span class="card-icon">🚨</span>
+        <span class="card-label">Emergency Info</span>
+        <span class="card-sub">Critical contacts</span>
+      </div>
+      <div class="dash-card" onclick="showSection(&#39;documents&#39;)">
+        <span class="card-icon">📁</span>
+        <span class="card-label">Documents Vault</span>
+        <span class="card-sub">Files &amp; uploads</span>
+      </div>
+      <div class="dash-card" onclick="showSection(&#39;notes&#39;)">
+        <span class="card-icon">📝</span>
+        <span class="card-label">Notes &amp; Reminders</span>
+        <span class="card-sub">Your notes</span>
+      </div>
+      <div class="dash-card full-width" onclick="showSection(&#39;search&#39;)">
+        <span class="card-icon">🔍</span>
+        <div>
+          <div class="card-label">Search Records</div>
+          <div class="card-sub">Find anything instantly</div>
+        </div>
+      </div>
+      <div class="dash-card" onclick="showSection(&#39;backup&#39;)">
+        <span class="card-icon">💾</span>
+        <span class="card-label">Backup &amp; Restore</span>
+        <span class="card-sub">Keep data safe</span>
+      </div>
+      <div class="dash-card" onclick="exportData()">
+        <span class="card-icon">📊</span>
+        <span class="card-label">Export Data</span>
+        <span class="card-sub">CSV / PDF</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PERSONAL INFO -->
+  <div id="personalView" class="content" style="display:none">
+    <div class="section-content" id="personalContent"></div>
+    <button class="edit-fab" onclick="editPersonal()" title="Edit">✏️</button>
+  </div>
+
+  <!-- MEDICAL -->
+  <div id="medicalView" class="content" style="display:none">
+    <div class="section-content" id="medicalContent"></div>
+    <button class="edit-fab" onclick="editMedical()" title="Edit">✏️</button>
+  </div>
+
+  <!-- EMERGENCY -->
+  <div id="emergencyView" class="content" style="display:none">
+    <div class="section-content" id="emergencyContent"></div>
+    <button class="edit-fab" onclick="editEmergency()" title="Edit">✏️</button>
+  </div>
+
+  <!-- FAMILY -->
+  <div id="familyView" class="content" style="display:none">
+    <div id="familyList"></div>
+    <div class="add-btn" onclick="addFamilyMember()">➕ Add Family Member</div>
+  </div>
+
+  <!-- DOCUMENTS -->
+  <div id="documentsView" class="content" style="display:none">
+    <div id="docList"></div>
+    <div class="add-btn" onclick="addDocument()">➕ Upload Document</div>
+  </div>
+
+  <!-- NOTES -->
+  <div id="notesView" class="content" style="display:none">
+    <div id="notesList"></div>
+    <div class="add-btn" onclick="addNote()">➕ Add Note</div>
+  </div>
+
+  <!-- SEARCH -->
+  <div id="searchView" class="content" style="display:none">
+    <div class="search-bar-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Search names, numbers, emails..." oninput="doSearch(this.value)" autocomplete="off">
+    </div>
+    <div id="searchResults"><div class="search-empty">Start typing to search your records</div></div>
+  </div>
+
+  <!-- BACKUP -->
+  <div id="backupView" class="content" style="display:none">
+    <div class="backup-card" style="margin-bottom:16px">
+      <div class="backup-icon">💾</div>
+      <h3>Backup Your Data</h3>
+      <p>Creates an encrypted backup file you can save to your device, USB drive, or cloud storage.</p>
+      <button class="btn-backup blue" onclick="doBackup()">⬇️ Download Backup File</button>
+    </div>
+    <div class="backup-card">
+      <div class="backup-icon">♻️</div>
+      <h3>Restore From Backup</h3>
+      <p>Select a previously saved backup file to restore all your records.</p>
+      <input type="file" id="restoreFile" accept=".json" style="display:none" onchange="doRestore(this)">
+      <button class="btn-backup green" onclick="document.getElementById(&#39;restoreFile&#39;).click()">📂 Select Backup File</button>
+      <p style="font-size:12px;color:var(--red);margin-top:8px;">⚠️ This will replace all current data.</p>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <button class="nav-item active" onclick="showDash()" id="nav-home">
+      <span class="nav-icon">🏠</span>Home
+    </button>
+    <button class="nav-item" onclick="showSection(&#39;personal&#39;)" id="nav-personal">
+      <span class="nav-icon">👤</span>Profile
+    </button>
+    <button class="nav-item" onclick="showSection(&#39;family&#39;)" id="nav-family">
+      <span class="nav-icon">👨‍👩‍👧</span>Family
+    </button>
+    <button class="nav-item" onclick="showSection(&#39;notes&#39;)" id="nav-notes">
+      <span class="nav-icon">📝</span>Notes
+    </button>
+    <button class="nav-item" onclick="showSection(&#39;search&#39;)" id="nav-search">
+      <span class="nav-icon">🔍</span>Search
+    </button>
+  </div>
+</div>
+
+<!-- ========== MODALS ========== -->
+
+<!-- Personal Edit Modal -->
+<div class="modal-overlay" id="personalModal">
+  <div class="modal">
+    <h3>✏️ Personal Information</h3>
+    <div class="form-row"><label>Full Name</label><input type="text" id="p_name" placeholder="Your full name"></div>
+    <div class="form-row"><label>Address</label><textarea id="p_address" placeholder="Home address"></textarea></div>
+    <div class="form-row"><label>Mobile Number</label><input type="tel" id="p_mobile" placeholder="+91 XXXXX XXXXX"></div>
+    <div class="form-row"><label>Alternate Mobile</label><input type="tel" id="p_mobile2" placeholder="+91 XXXXX XXXXX"></div>
+    <div class="form-row"><label>Email</label><input type="email" id="p_email" placeholder="your@email.com"></div>
+    <div class="form-row"><label>Date of Birth</label><input type="date" id="p_dob"></div>
+    <div class="form-row"><label>Aadhaar Number</label><input type="text" id="p_aadhaar" placeholder="XXXX XXXX XXXX" maxlength="14"></div>
+    <div class="form-row"><label>PAN Number</label><input type="text" id="p_pan" placeholder="ABCDE1234F" maxlength="10" style="text-transform:uppercase"></div>
+    <div class="form-row"><label>Blood Group</label>
+      <select id="p_blood">
+        <option value="">Select blood group</option>
+        <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+        <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>Photo</label>
+      <div class="photo-upload-area" onclick="document.getElementById(&#39;p_photo_input&#39;).click()">
+        <img id="p_photo_preview" src="file:///C:/Users/admin/AppData/Local/Temp/Rar$EX54.812/index.html" style="display:none;width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto 10px;">
+        <p id="p_photo_label">📷 Tap to upload photo</p>
+        <input type="file" id="p_photo_input" accept="image/*" onchange="previewPhoto(this)">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal(&#39;personalModal&#39;)">Cancel</button>
+      <button class="btn-save" onclick="savePersonal()">💾 Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Medical Edit Modal -->
+<div class="modal-overlay" id="medicalModal">
+  <div class="modal">
+    <h3>🏥 Medical &amp; Insurance</h3>
+    <div class="form-row"><label>Medical Card Number</label><input type="text" id="m_medcard" placeholder="Card number"></div>
+    <div class="form-row"><label>Insurance Card Number</label><input type="text" id="m_inscard" placeholder="Card number"></div>
+    <div class="form-row"><label>Insurance Company</label><input type="text" id="m_insco" placeholder="Company name"></div>
+    <div class="form-row"><label>Policy Number</label><input type="text" id="m_policy" placeholder="Policy number"></div>
+    <div class="form-row"><label>Allergies</label><textarea id="m_allergies" placeholder="List any known allergies..."></textarea></div>
+    <div class="form-row"><label>Current Medications</label><textarea id="m_medications" placeholder="Medication names and dosages..."></textarea></div>
+    <div class="form-row"><label>Medical Conditions</label><textarea id="m_conditions" placeholder="Existing conditions..."></textarea></div>
+    <div class="form-row"><label>Family Doctor Name</label><input type="text" id="m_docname" placeholder="Dr. Name"></div>
+    <div class="form-row"><label>Family Doctor Phone</label><input type="tel" id="m_docphone" placeholder="+91 XXXXX XXXXX"></div>
+    <div class="form-row"><label>Preferred Hospital</label><input type="text" id="m_hospital" placeholder="Hospital name &amp; location"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal(&#39;medicalModal&#39;)">Cancel</button>
+      <button class="btn-save" onclick="saveMedical()">💾 Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Emergency Edit Modal -->
+<div class="modal-overlay" id="emergencyModal">
+  <div class="modal">
+    <h3>🚨 Emergency Information</h3>
+    <div class="form-row"><label>Emergency Contact Name</label><input type="text" id="e_name" placeholder="Full name"></div>
+    <div class="form-row"><label>Relationship</label><input type="text" id="e_rel" placeholder="e.g. Spouse, Son, Daughter"></div>
+    <div class="form-row"><label>Emergency Contact Number</label><input type="tel" id="e_phone" placeholder="+91 XXXXX XXXXX"></div>
+    <div class="form-row"><label>Ambulance Number</label><input type="tel" id="e_ambulance" placeholder="108 or local number"></div>
+    <div class="form-row"><label>Nearby Hospital 1</label><input type="text" id="e_hosp1" placeholder="Hospital name &amp; phone"></div>
+    <div class="form-row"><label>Nearby Hospital 2</label><input type="text" id="e_hosp2" placeholder="Hospital name &amp; phone"></div>
+    <div class="form-row"><label>Police Station Number</label><input type="tel" id="e_police" placeholder="100 or local number"></div>
+    <div class="form-row"><label>Fire Service Number</label><input type="tel" id="e_fire" placeholder="101 or local number"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal(&#39;emergencyModal&#39;)">Cancel</button>
+      <button class="btn-save" onclick="saveEmergency()">💾 Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Family Member Modal -->
+<div class="modal-overlay" id="familyModal">
+  <div class="modal">
+    <h3 id="familyModalTitle">👨‍👩‍👧 Family Member</h3>
+    <input type="hidden" id="fm_id">
+    <div class="form-row"><label>Name</label><input type="text" id="fm_name" placeholder="Full name"></div>
+    <div class="form-row"><label>Relationship</label>
+      <select id="fm_rel">
+        <option value="">Select relationship</option>
+        <option>Spouse</option><option>Son</option><option>Daughter</option>
+        <option>Father</option><option>Mother</option><option>Brother</option>
+        <option>Sister</option><option>Grandfather</option><option>Grandmother</option><option>Other</option>
+      </select>
+    </div>
+    <div class="form-row"><label>Mobile Number</label><input type="tel" id="fm_mobile" placeholder="+91 XXXXX XXXXX"></div>
+    <div class="form-row"><label>Email</label><input type="email" id="fm_email" placeholder="email@example.com"></div>
+    <div class="form-row"><label>Date of Birth</label><input type="date" id="fm_dob"></div>
+    <div class="form-row"><label>Notes</label><textarea id="fm_notes" placeholder="Any important notes..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-danger" id="fm_delete" onclick="deleteFamilyMember()" style="display:none">🗑️ Delete</button>
+      <button class="btn-cancel" onclick="closeModal(&#39;familyModal&#39;)">Cancel</button>
+      <button class="btn-save" onclick="saveFamilyMember()">💾 Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Document Modal -->
+<div class="modal-overlay" id="docModal">
+  <div class="modal">
+    <h3 id="docModalTitle">📁 Upload Document</h3>
+    <input type="hidden" id="doc_id">
+    <div class="form-row"><label>Document Name</label><input type="text" id="doc_name" placeholder="e.g. Aadhaar Card"></div>
+    <div class="form-row"><label>Document Type</label>
+      <select id="doc_type">
+        <option value="">Select type</option>
+        <option>Identity Document</option><option>Medical Record</option>
+        <option>Insurance Document</option><option>Financial Document</option>
+        <option>Education Certificate</option><option>Property Document</option><option>Other</option>
+      </select>
+    </div>
+    <div class="form-row"><label>Description</label><textarea id="doc_desc" placeholder="Brief description..."></textarea></div>
+    <div class="form-row">
+      <label>File (PDF, JPG, PNG)</label>
+      <div class="photo-upload-area" onclick="document.getElementById(&#39;doc_file_input&#39;).click()">
+        <p id="doc_file_label">📎 Tap to select file</p>
+        <input type="file" id="doc_file_input" accept=".pdf,.jpg,.jpeg,.png" onchange="handleDocFile(this)">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-danger" id="doc_delete" onclick="deleteDocument()" style="display:none">🗑️ Delete</button>
+      <button class="btn-cancel" onclick="closeModal(&#39;docModal&#39;)">Cancel</button>
+      <button class="btn-save" onclick="saveDocument()">💾 Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Note Modal -->
+<div class="modal-overlay" id="noteModal">
+  <div class="modal">
+    <h3 id="noteModalTitle">📝 Note</h3>
+    <input type="hidden" id="n_id">
+    <div class="form-row"><label>Title</label><input type="text" id="n_title" placeholder="Note title"></div>
+    <div class="form-row"><label>Category</label>
+      <select id="n_cat">
+        <option value="General">General</option>
+        <option value="Medical">Medical</option>
+        <option value="Insurance">Insurance</option>
+        <option value="Personal">Personal</option>
+        <option value="Important">Important</option>
+      </select>
+    </div>
+    <div class="form-row"><label>Description</label><textarea id="n_desc" placeholder="Your note..." style="min-height:130px"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-danger" id="n_delete" onclick="deleteNote()" style="display:none">🗑️ Delete</button>
+      <button class="btn-cancel" onclick="closeModal(&#39;noteModal&#39;)">Cancel</button>
+      <button class="btn-save" onclick="saveNote()">💾 Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Modal -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal">
+    <h3 id="confirmTitle">Confirm</h3>
+    <p id="confirmMsg" style="font-size:16px;color:var(--grey-text);margin-bottom:20px;"></p>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal(&#39;confirmModal&#39;)">Cancel</button>
+      <button class="btn-danger" id="confirmOkBtn" style="flex:1">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- PWA Install Banner -->
+<div class="install-banner" id="installBanner">
+  <p>📱 Install MyData Pro as an app!</p>
+  <button onclick="installApp()">Install</button>
+  <button class="install-close" onclick="document.getElementById(&#39;installBanner&#39;).style.display=&#39;none&#39;">✕</button>
+</div>
+
+<script>
+// ===== DATA STORE =====
+const DB = {
+  get: (k) => { try { const v = localStorage.getItem('mdp_'+k); return v ? JSON.parse(v) : null; } catch(e){ return null; } },
+  set: (k, v) => { localStorage.setItem('mdp_'+k, JSON.stringify(v)); },
+  remove: (k) => localStorage.removeItem('mdp_'+k)
+};
+
+// ===== AUTH =====
+let inactivityTimer;
+function resetTimer() {
+  clearTimeout(inactivityTimer);
+  inactivityTimer = setTimeout(doLogout, 15 * 60 * 1000);
+}
+document.addEventListener('click', resetTimer);
+document.addEventListener('keydown', resetTimer);
+document.addEventListener('touchstart', resetTimer);
+
+function togglePw(id, btn) {
+  const el = document.getElementById(id);
+  if (el.type === 'password') { el.type = 'text'; btn.textContent = '🙈'; }
+  else { el.type = 'password'; btn.textContent = '👁️'; }
+}
+
+function doLogin() {
+  const pw = document.getElementById('loginPassword').value;
+  const stored = DB.get('auth');
+  if (!stored) return;
+  if (pw === stored.password) {
+    document.getElementById('loginError').style.display = 'none';
+    document.getElementById('loginPassword').value = '';
+    showApp();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+    document.getElementById('loginPassword').value = '';
+    document.getElementById('loginPassword').focus();
+  }
+}
+
+function doSetup() {
+  const pw = document.getElementById('setupPw').value.trim();
+  const pw2 = document.getElementById('setupPw2').value.trim();
+  const hint = document.getElementById('setupHint').value.trim();
+  if (pw.length < 4) { alert('Password must be at least 4 characters.'); return; }
+  if (pw !== pw2) { alert('Passwords do not match.'); return; }
+  DB.set('auth', { password: pw, hint: hint });
+  showApp();
+}
+
+function showHint() {
+  const stored = DB.get('auth');
+  if (stored && stored.hint) {
+    document.getElementById('loginHint').textContent = '💡 Hint: ' + stored.hint;
+  } else {
+    document.getElementById('loginHint').textContent = 'No hint set.';
+  }
+}
+
+function doLogout() {
+  clearTimeout(inactivityTimer);
+  document.getElementById('appScreen').classList.remove('active');
+  document.getElementById('loginScreen').classList.add('active');
+  document.getElementById('loginPassword').value = '';
+  document.getElementById('loginError').style.display = 'none';
+  document.getElementById('loginHint').textContent = '';
+}
+
+function showApp() {
+  document.getElementById('loginScreen').classList.remove('active');
+  document.getElementById('appScreen').classList.add('active');
+  setWelcome();
+  showDash();
+  resetTimer();
+}
+
+function setWelcome() {
+  const h = new Date().getHours();
+  const greet = h < 12 ? 'Good Morning' : h < 17 ? 'Good Afternoon' : 'Good Evening';
+  const profile = DB.get('personal');
+  const name = profile && profile.name ? profile.name.split(' ')[0] : '';
+  document.getElementById('welcomeMsg').textContent = `${greet}${name ? ', ' + name : ''}! 👋`;
+}
+
+document.getElementById('loginPassword').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+
+// ===== NAVIGATION =====
+let currentSection = 'dash';
+function showDash() {
+  hideAll();
+  document.getElementById('dashView').style.display = '';
+  document.getElementById('backBtn').style.display = 'none';
+  document.getElementById('headerTitle').textContent = 'MyData Pro';
+  setActiveNav('nav-home');
+  currentSection = 'dash';
+  setWelcome();
+}
+function showSection(sec) {
+  hideAll();
+  currentSection = sec;
+  document.getElementById('backBtn').style.display = '';
+  const titles = {
+    personal:'Personal Information', medical:'Medical & Insurance',
+    emergency:'Emergency Information', family:'Family Contacts',
+    documents:'Documents Vault', notes:'Notes & Reminders',
+    search:'Search Records', backup:'Backup & Restore'
+  };
+  document.getElementById('headerTitle').textContent = titles[sec] || 'MyData Pro';
+  document.getElementById(sec+'View').style.display = '';
+  const navMap = {personal:'nav-personal',family:'nav-family',notes:'nav-notes',search:'nav-search'};
+  if(navMap[sec]) setActiveNav(navMap[sec]);
+  if(sec==='personal') renderPersonal();
+  if(sec==='medical') renderMedical();
+  if(sec==='emergency') renderEmergency();
+  if(sec==='family') renderFamily();
+  if(sec==='documents') renderDocuments();
+  if(sec==='notes') renderNotes();
+  if(sec==='search') { document.getElementById('searchInput').value=''; document.getElementById('searchResults').innerHTML='<div class="search-empty">Start typing to search your records</div>'; setTimeout(()=>document.getElementById('searchInput').focus(),300); }
+}
+function showSearch() { showSection('search'); }
+function goBack() { showDash(); }
+function hideAll() {
+  ['dash','personal','medical','emergency','family','documents','notes','search','backup'].forEach(s=>{
+    const el = document.getElementById(s+'View');
+    if(el) el.style.display='none';
+  });
+  setActiveNav('');
+}
+function setActiveNav(id) {
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(id) document.getElementById(id)?.classList.add('active');
+}
+
+// ===== PERSONAL =====
+function renderPersonal() {
+  const d = DB.get('personal') || {};
+  const fields = [
+    ['Full Name', d.name], ['Address', d.address], ['Mobile Number', d.mobile],
+    ['Alternate Mobile', d.mobile2], ['Email', d.email], ['Date of Birth', d.dob],
+    ['Aadhaar Number', d.aadhaar], ['PAN Number', d.pan], ['Blood Group', d.blood]
+  ];
+  let photoHtml = '';
+  if(d.photo) photoHtml = `<div style="text-align:center;margin-bottom:20px"><img src="${d.photo}" style="width:110px;height:110px;border-radius:50%;object-fit:cover;border:4px solid var(--blue-light)"></div>`;
+  let html = `<div class="info-card"><h3>👤 Personal Profile</h3>${photoHtml}`;
+  fields.forEach(([label, val]) => {
+    html += `<div class="field-row"><div class="field-label">${label}</div><div class="field-value ${!val?'empty':''}">${val || 'Not set'}</div></div>`;
+  });
+  html += '</div>';
+  document.getElementById('personalContent').innerHTML = html;
+}
+function editPersonal() {
+  const d = DB.get('personal') || {};
+  document.getElementById('p_name').value = d.name||'';
+  document.getElementById('p_address').value = d.address||'';
+  document.getElementById('p_mobile').value = d.mobile||'';
+  document.getElementById('p_mobile2').value = d.mobile2||'';
+  document.getElementById('p_email').value = d.email||'';
+  document.getElementById('p_dob').value = d.dob||'';
+  document.getElementById('p_aadhaar').value = d.aadhaar||'';
+  document.getElementById('p_pan').value = d.pan||'';
+  document.getElementById('p_blood').value = d.blood||'';
+  if(d.photo){ document.getElementById('p_photo_preview').src=d.photo; document.getElementById('p_photo_preview').style.display='block'; document.getElementById('p_photo_label').textContent='📷 Change photo'; }
+  else{ document.getElementById('p_photo_preview').style.display='none'; document.getElementById('p_photo_label').textContent='📷 Tap to upload photo'; }
+  openModal('personalModal');
+}
+function previewPhoto(input) {
+  const file = input.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('p_photo_preview').src = e.target.result;
+    document.getElementById('p_photo_preview').style.display = 'block';
+    document.getElementById('p_photo_label').textContent = '📷 Change photo';
+  };
+  reader.readAsDataURL(file);
+}
+function savePersonal() {
+  const d = DB.get('personal') || {};
+  const newPhoto = document.getElementById('p_photo_preview').src;
+  DB.set('personal', {
+    name: document.getElementById('p_name').value.trim(),
+    address: document.getElementById('p_address').value.trim(),
+    mobile: document.getElementById('p_mobile').value.trim(),
+    mobile2: document.getElementById('p_mobile2').value.trim(),
+    email: document.getElementById('p_email').value.trim(),
+    dob: document.getElementById('p_dob').value,
+    aadhaar: document.getElementById('p_aadhaar').value.trim(),
+    pan: document.getElementById('p_pan').value.trim().toUpperCase(),
+    blood: document.getElementById('p_blood').value,
+    photo: (newPhoto && newPhoto !== window.location.href) ? newPhoto : (d.photo||''),
+    modified: new Date().toISOString()
+  });
+  closeModal('personalModal');
+  renderPersonal();
+  showToast('Personal info saved ✓');
+}
+
+// ===== MEDICAL =====
+function renderMedical() {
+  const d = DB.get('medical') || {};
+  const fields = [
+    ['Medical Card Number', d.medcard], ['Insurance Card Number', d.inscard],
+    ['Insurance Company', d.insco], ['Policy Number', d.policy],
+    ['Allergies', d.allergies], ['Current Medications', d.medications],
+    ['Medical Conditions', d.conditions], ['Family Doctor', d.docname],
+    ['Doctor Phone', d.docphone], ['Preferred Hospital', d.hospital]
+  ];
+  let html = '<div class="info-card"><h3>🏥 Medical & Insurance</h3>';
+  fields.forEach(([label, val]) => {
+    html += `<div class="field-row"><div class="field-label">${label}</div><div class="field-value ${!val?'empty':''}">${val || 'Not set'}</div></div>`;
+  });
+  html += '</div>';
+  document.getElementById('medicalContent').innerHTML = html;
+}
+function editMedical() {
+  const d = DB.get('medical') || {};
+  ['medcard','inscard','insco','policy','allergies','medications','conditions','docname','docphone','hospital'].forEach(k=>{
+    document.getElementById('m_'+k).value = d[k]||'';
+  });
+  openModal('medicalModal');
+}
+function saveMedical() {
+  DB.set('medical', {
+    medcard: document.getElementById('m_medcard').value.trim(),
+    inscard: document.getElementById('m_inscard').value.trim(),
+    insco: document.getElementById('m_insco').value.trim(),
+    policy: document.getElementById('m_policy').value.trim(),
+    allergies: document.getElementById('m_allergies').value.trim(),
+    medications: document.getElementById('m_medications').value.trim(),
+    conditions: document.getElementById('m_conditions').value.trim(),
+    docname: document.getElementById('m_docname').value.trim(),
+    docphone: document.getElementById('m_docphone').value.trim(),
+    hospital: document.getElementById('m_hospital').value.trim(),
+    modified: new Date().toISOString()
+  });
+  closeModal('medicalModal');
+  renderMedical();
+  showToast('Medical info saved ✓');
+}
+
+// ===== EMERGENCY =====
+function renderEmergency() {
+  const d = DB.get('emergency') || {};
+  const fields = [
+    ['Emergency Contact', d.name], ['Relationship', d.rel],
+    ['Contact Number', d.phone], ['Ambulance', d.ambulance],
+    ['Nearby Hospital 1', d.hosp1], ['Nearby Hospital 2', d.hosp2],
+    ['Police Station', d.police], ['Fire Service', d.fire]
+  ];
+  let html = '<div class="info-card"><h3>🚨 Emergency Information</h3>';
+  fields.forEach(([label, val]) => {
+    html += `<div class="field-row"><div class="field-label">${label}</div><div class="field-value ${!val?'empty':''}">${val || 'Not set'}</div></div>`;
+  });
+  html += '</div>';
+  document.getElementById('emergencyContent').innerHTML = html;
+}
+function editEmergency() {
+  const d = DB.get('emergency') || {};
+  ['name','rel','phone','ambulance','hosp1','hosp2','police','fire'].forEach(k=>{
+    document.getElementById('e_'+k).value = d[k]||'';
+  });
+  openModal('emergencyModal');
+}
+function saveEmergency() {
+  DB.set('emergency', {
+    name: document.getElementById('e_name').value.trim(),
+    rel: document.getElementById('e_rel').value.trim(),
+    phone: document.getElementById('e_phone').value.trim(),
+    ambulance: document.getElementById('e_ambulance').value.trim(),
+    hosp1: document.getElementById('e_hosp1').value.trim(),
+    hosp2: document.getElementById('e_hosp2').value.trim(),
+    police: document.getElementById('e_police').value.trim(),
+    fire: document.getElementById('e_fire').value.trim(),
+    modified: new Date().toISOString()
+  });
+  closeModal('emergencyModal');
+  renderEmergency();
+  showToast('Emergency info saved ✓');
+}
+
+// ===== FAMILY =====
+function renderFamily() {
+  const members = DB.get('family') || [];
+  let html = '';
+  if(members.length === 0) {
+    html = '<div class="search-empty">No family members added yet.<br>Tap ➕ to add one.</div>';
+  } else {
+    members.forEach((m, i) => {
+      const initials = m.name ? m.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2) : '?';
+      html += `<div class="list-item" onclick="editFamilyMember(${i})">
+        <div class="list-avatar">${initials}</div>
+        <div class="list-info">
+          <div class="name">${m.name||'Unknown'}</div>
+          <div class="sub">${m.rel||''} ${m.mobile ? '• ' + m.mobile : ''}</div>
+        </div>
+        <span class="list-arrow">›</span>
+      </div>`;
+    });
+  }
+  document.getElementById('familyList').innerHTML = html;
+}
+function addFamilyMember() {
+  document.getElementById('familyModalTitle').textContent = '➕ Add Family Member';
+  document.getElementById('fm_id').value = '';
+  ['name','mobile','email','dob','notes'].forEach(k=>document.getElementById('fm_'+k).value='');
+  document.getElementById('fm_rel').value = '';
+  document.getElementById('fm_delete').style.display = 'none';
+  openModal('familyModal');
+}
+function editFamilyMember(i) {
+  const members = DB.get('family') || [];
+  const m = members[i];
+  document.getElementById('familyModalTitle').textContent = '✏️ Edit Family Member';
+  document.getElementById('fm_id').value = i;
+  document.getElementById('fm_name').value = m.name||'';
+  document.getElementById('fm_rel').value = m.rel||'';
+  document.getElementById('fm_mobile').value = m.mobile||'';
+  document.getElementById('fm_email').value = m.email||'';
+  document.getElementById('fm_dob').value = m.dob||'';
+  document.getElementById('fm_notes').value = m.notes||'';
+  document.getElementById('fm_delete').style.display = '';
+  openModal('familyModal');
+}
+function saveFamilyMember() {
+  const members = DB.get('family') || [];
+  const idx = document.getElementById('fm_id').value;
+  const obj = {
+    name: document.getElementById('fm_name').value.trim(),
+    rel: document.getElementById('fm_rel').value,
+    mobile: document.getElementById('fm_mobile').value.trim(),
+    email: document.getElementById('fm_email').value.trim(),
+    dob: document.getElementById('fm_dob').value,
+    notes: document.getElementById('fm_notes').value.trim()
+  };
+  if(idx === '') members.push(obj);
+  else members[parseInt(idx)] = obj;
+  DB.set('family', members);
+  closeModal('familyModal');
+  renderFamily();
+  showToast('Family member saved ✓');
+}
+function deleteFamilyMember() {
+  const idx = parseInt(document.getElementById('fm_id').value);
+  showConfirm('Delete Family Member', 'Remove this family member? This cannot be undone.', ()=>{
+    const members = DB.get('family') || [];
+    members.splice(idx, 1);
+    DB.set('family', members);
+    closeModal('familyModal');
+    renderFamily();
+    showToast('Member deleted');
+  });
+}
+
+// ===== DOCUMENTS =====
+function renderDocuments() {
+  const docs = DB.get('documents') || [];
+  let html = '';
+  if(docs.length === 0) {
+    html = '<div class="search-empty">No documents uploaded yet.<br>Tap ➕ to upload one.</div>';
+  } else {
+    docs.forEach((doc, i) => {
+      const isPDF = doc.fileType && doc.fileType.includes('pdf');
+      const icon = isPDF ? '📄' : '🖼️';
+      const iconClass = isPDF ? 'pdf' : 'img';
+      html += `<div class="doc-item">
+        <div class="doc-icon ${iconClass}">${icon}</div>
+        <div class="doc-info">
+          <div class="doc-name">${doc.name||'Unnamed'}</div>
+          <div class="doc-meta">${doc.type||''} • ${doc.date||''}</div>
+          <div class="doc-meta" style="color:var(--grey-text)">${doc.desc||''}</div>
+        </div>
+        <div class="doc-actions">
+          ${doc.fileData ? `<button class="doc-btn" onclick="viewDoc(${i})">👁️ View</button>` : ''}
+          <button class="doc-btn" onclick="editDoc(${i})">✏️ Edit</button>
+        </div>
+      </div>`;
+    });
+  }
+  document.getElementById('docList').innerHTML = html;
+}
+let pendingDocFile = null;
+function addDocument() {
+  document.getElementById('docModalTitle').textContent = '📁 Upload Document';
+  document.getElementById('doc_id').value = '';
+  document.getElementById('doc_name').value = '';
+  document.getElementById('doc_type').value = '';
+  document.getElementById('doc_desc').value = '';
+  document.getElementById('doc_file_label').textContent = '📎 Tap to select file';
+  document.getElementById('doc_delete').style.display = 'none';
+  pendingDocFile = null;
+  openModal('docModal');
+}
+function editDoc(i) {
+  const docs = DB.get('documents') || [];
+  const doc = docs[i];
+  document.getElementById('docModalTitle').textContent = '✏️ Edit Document';
+  document.getElementById('doc_id').value = i;
+  document.getElementById('doc_name').value = doc.name||'';
+  document.getElementById('doc_type').value = doc.type||'';
+  document.getElementById('doc_desc').value = doc.desc||'';
+  document.getElementById('doc_file_label').textContent = doc.fileData ? '📎 File attached — tap to change' : '📎 Tap to select file';
+  document.getElementById('doc_delete').style.display = '';
+  pendingDocFile = null;
+  openModal('docModal');
+}
+function handleDocFile(input) {
+  const file = input.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    pendingDocFile = { data: e.target.result, type: file.type, origName: file.name };
+    document.getElementById('doc_file_label').textContent = '✅ ' + file.name;
+  };
+  reader.readAsDataURL(file);
+}
+function saveDocument() {
+  const docs = DB.get('documents') || [];
+  const idx = document.getElementById('doc_id').value;
+  const existing = idx !== '' ? docs[parseInt(idx)] : {};
+  const obj = {
+    name: document.getElementById('doc_name').value.trim(),
+    type: document.getElementById('doc_type').value,
+    desc: document.getElementById('doc_desc').value.trim(),
+    date: new Date().toLocaleDateString(),
+    fileData: pendingDocFile ? pendingDocFile.data : (existing.fileData||null),
+    fileType: pendingDocFile ? pendingDocFile.type : (existing.fileType||null),
+    fileName: pendingDocFile ? pendingDocFile.origName : (existing.fileName||null)
+  };
+  if(idx === '') docs.push(obj);
+  else docs[parseInt(idx)] = obj;
+  DB.set('documents', docs);
+  closeModal('docModal');
+  renderDocuments();
+  showToast('Document saved ✓');
+}
+function viewDoc(i) {
+  const docs = DB.get('documents') || [];
+  const doc = docs[i];
+  if(!doc.fileData) return;
+  const win = window.open();
+  win.document.write(`<html><body style="margin:0;background:#222"><img src="${doc.fileData}" style="max-width:100%;display:block;margin:auto" onerror="this.style.display='none'"><iframe src="${doc.fileData}" style="width:100%;height:100vh;border:none"></iframe></body></html>`);
+}
+function deleteDocument() {
+  const idx = parseInt(document.getElementById('doc_id').value);
+  showConfirm('Delete Document', 'Remove this document? This cannot be undone.', ()=>{
+    const docs = DB.get('documents') || [];
+    docs.splice(idx, 1);
+    DB.set('documents', docs);
+    closeModal('docModal');
+    renderDocuments();
+    showToast('Document deleted');
+  });
+}
+
+// ===== NOTES =====
+function renderNotes() {
+  const notes = DB.get('notes') || [];
+  let html = '';
+  if(notes.length === 0) {
+    html = '<div class="search-empty">No notes yet.<br>Tap ➕ to add one.</div>';
+  } else {
+    notes.forEach((n, i) => {
+      const cat = n.cat || 'General';
+      html += `<div class="note-item" onclick="editNoteItem(${i})">
+        <div class="note-header">
+          <div class="note-title">${n.title||'Untitled'}</div>
+          <span class="note-badge badge-${cat.toLowerCase()}">${cat}</span>
+        </div>
+        <div class="note-desc">${n.desc||''}</div>
+      </div>`;
+    });
+  }
+  document.getElementById('notesList').innerHTML = html;
+}
+function addNote() {
+  document.getElementById('noteModalTitle').textContent = '📝 New Note';
+  document.getElementById('n_id').value = '';
+  document.getElementById('n_title').value = '';
+  document.getElementById('n_cat').value = 'General';
+  document.getElementById('n_desc').value = '';
+  document.getElementById('n_delete').style.display = 'none';
+  openModal('noteModal');
+}
+function editNoteItem(i) {
+  const notes = DB.get('notes') || [];
+  const n = notes[i];
+  document.getElementById('noteModalTitle').textContent = '✏️ Edit Note';
+  document.getElementById('n_id').value = i;
+  document.getElementById('n_title').value = n.title||'';
+  document.getElementById('n_cat').value = n.cat||'General';
+  document.getElementById('n_desc').value = n.desc||'';
+  document.getElementById('n_delete').style.display = '';
+  openModal('noteModal');
+}
+function saveNote() {
+  const notes = DB.get('notes') || [];
+  const idx = document.getElementById('n_id').value;
+  const obj = {
+    title: document.getElementById('n_title').value.trim(),
+    cat: document.getElementById('n_cat').value,
+    desc: document.getElementById('n_desc').value.trim(),
+    date: new Date().toISOString()
+  };
+  if(idx === '') notes.unshift(obj);
+  else notes[parseInt(idx)] = obj;
+  DB.set('notes', notes);
+  closeModal('noteModal');
+  renderNotes();
+  showToast('Note saved ✓');
+}
+function deleteNote() {
+  const idx = parseInt(document.getElementById('n_id').value);
+  showConfirm('Delete Note', 'Delete this note? This cannot be undone.', ()=>{
+    const notes = DB.get('notes') || [];
+    notes.splice(idx, 1);
+    DB.set('notes', notes);
+    closeModal('noteModal');
+    renderNotes();
+    showToast('Note deleted');
+  });
+}
+
+// ===== SEARCH =====
+function doSearch(q) {
+  q = q.trim().toLowerCase();
+  if(!q) { document.getElementById('searchResults').innerHTML = '<div class="search-empty">Start typing to search your records</div>'; return; }
+  const results = [];
+  // Personal
+  const p = DB.get('personal') || {};
+  if(p.name && p.name.toLowerCase().includes(q)) results.push({cat:'Personal', name:p.name, detail:'Profile'});
+  if(p.mobile && p.mobile.includes(q)) results.push({cat:'Personal', name:'Mobile: '+p.mobile, detail:p.name||''});
+  if(p.email && p.email.toLowerCase().includes(q)) results.push({cat:'Personal', name:p.email, detail:p.name||''});
+  // Medical
+  const m = DB.get('medical') || {};
+  if(m.docname && m.docname.toLowerCase().includes(q)) results.push({cat:'Medical', name:m.docname, detail:'Family Doctor'});
+  if(m.hospital && m.hospital.toLowerCase().includes(q)) results.push({cat:'Medical', name:m.hospital, detail:'Preferred Hospital'});
+  if(m.insco && m.insco.toLowerCase().includes(q)) results.push({cat:'Medical', name:m.insco, detail:'Insurance Company'});
+  // Emergency
+  const e = DB.get('emergency') || {};
+  if(e.name && e.name.toLowerCase().includes(q)) results.push({cat:'Emergency', name:e.name, detail:'Emergency Contact'});
+  if(e.hosp1 && e.hosp1.toLowerCase().includes(q)) results.push({cat:'Emergency', name:e.hosp1, detail:'Nearby Hospital 1'});
+  if(e.hosp2 && e.hosp2.toLowerCase().includes(q)) results.push({cat:'Emergency', name:e.hosp2, detail:'Nearby Hospital 2'});
+  // Family
+  (DB.get('family')||[]).forEach(f=>{
+    if(f.name && f.name.toLowerCase().includes(q)) results.push({cat:'Family', name:f.name, detail:f.rel||''});
+    if(f.mobile && f.mobile.includes(q)) results.push({cat:'Family', name:f.mobile, detail:f.name||''});
+    if(f.email && f.email.toLowerCase().includes(q)) results.push({cat:'Family', name:f.email, detail:f.name||''});
+  });
+  // Notes
+  (DB.get('notes')||[]).forEach(n=>{
+    if((n.title && n.title.toLowerCase().includes(q))||(n.desc && n.desc.toLowerCase().includes(q))) {
+      results.push({cat:'Notes', name:n.title||'Note', detail:n.desc?.slice(0,60)||''});
+    }
+  });
+  // Documents
+  (DB.get('documents')||[]).forEach(d=>{
+    if(d.name && d.name.toLowerCase().includes(q)) results.push({cat:'Documents', name:d.name, detail:d.type||''});
+  });
+
+  if(results.length === 0) {
+    document.getElementById('searchResults').innerHTML = `<div class="search-empty">No results found for "<strong>${q}</strong>"</div>`;
+  } else {
+    document.getElementById('searchResults').innerHTML = results.map(r=>`
+      <div class="search-result">
+        <div class="res-cat">${r.cat}</div>
+        <div class="res-name">${r.name}</div>
+        ${r.detail ? `<div class="res-detail">${r.detail}</div>` : ''}
+      </div>`).join('');
+  }
+}
+
+// ===== BACKUP & RESTORE =====
+function doBackup() {
+  const data = {
+    version: '1.0',
+    created: new Date().toISOString(),
+    personal: DB.get('personal'),
+    medical: DB.get('medical'),
+    emergency: DB.get('emergency'),
+    family: DB.get('family'),
+    notes: DB.get('notes'),
+    documents: DB.get('documents')
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const d = new Date();
+  a.download = `MyDataPro_Backup_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Backup downloaded ✓');
+}
+function doRestore(input) {
+  const file = input.files[0]; if(!file) return;
+  showConfirm('Restore Backup', 'This will replace ALL current data with the backup. Continue?', ()=>{
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const data = JSON.parse(e.target.result);
+        if(data.personal) DB.set('personal', data.personal);
+        if(data.medical) DB.set('medical', data.medical);
+        if(data.emergency) DB.set('emergency', data.emergency);
+        if(data.family) DB.set('family', data.family);
+        if(data.notes) DB.set('notes', data.notes);
+        if(data.documents) DB.set('documents', data.documents);
+        showToast('Backup restored ✓');
+        setWelcome();
+      } catch(err) { alert('Invalid backup file. Please select a valid MyDataPro backup.'); }
+    };
+    reader.readAsText(file);
+  });
+  input.value = '';
+}
+
+// ===== EXPORT =====
+function exportData() {
+  const p = DB.get('personal') || {};
+  const m = DB.get('medical') || {};
+  const e = DB.get('emergency') || {};
+  const family = DB.get('family') || [];
+  const notes = DB.get('notes') || [];
+
+  let csv = 'Section,Field,Value\n';
+  const addSection = (sec, obj) => Object.entries(obj).forEach(([k,v])=>{ if(k!=='photo'&&k!=='modified'&&v) csv+=`"${sec}","${k}","${String(v).replace(/"/g,'""')}"\n`; });
+  addSection('Personal', p);
+  addSection('Medical', m);
+  addSection('Emergency', e);
+  family.forEach((f,i)=>addSection(`Family_${i+1}`, f));
+  notes.forEach((n,i)=>addSection(`Note_${i+1}`, n));
+
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `MyDataPro_Export_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Data exported as CSV ✓');
+}
+
+// ===== MODAL HELPERS =====
+function openModal(id) { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => { if(e.target === overlay) overlay.classList.remove('show'); });
+});
+
+let confirmCallback = null;
+function showConfirm(title, msg, cb) {
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmMsg').textContent = msg;
+  confirmCallback = cb;
+  document.getElementById('confirmOkBtn').onclick = ()=>{ closeModal('confirmModal'); if(confirmCallback) confirmCallback(); };
+  openModal('confirmModal');
+}
+
+// ===== TOAST =====
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2500);
+}
+
+// ===== PWA INSTALL =====
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('installBanner').style.display = 'flex';
+});
+function installApp() {
+  if(!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(()=>{ deferredPrompt=null; document.getElementById('installBanner').style.display='none'; });
+}
+
+// ===== INIT =====
+(function init() {
+  const stored = DB.get('auth');
+  if(!stored) {
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('setupForm').style.display = 'block';
+  }
+})();
+</script>
+
+
+</body></html>
