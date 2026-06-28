@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1a4a7a">
+<meta name="description" content="MyData – Your personal & emergency info, always with you.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MyData">
+<title>MyData – Personal Info Vault</title>
+<style>
+  :root {
+    --blue-900: #042C53;
+    --blue-800: #0C447C;
+    --blue-600: #185FA5;
+    --blue-400: #378ADD;
+    --blue-200: #85B7EB;
+    --blue-100: #B5D4F4;
+    --blue-50:  #E6F1FB;
+    --teal-600: #0F6E56;
+    --teal-400: #1D9E75;
+    --teal-50:  #E1F5EE;
+    --red-600:  #A32D2D;
+    --red-400:  #E24B4A;
+    --red-50:   #FCEBEB;
+    --amber-400:#BA7517;
+    --amber-50: #FAEEDA;
+    --gray-900: #2C2C2A;
+    --gray-600: #5F5E5A;
+    --gray-200: #B4B2A9;
+    --gray-100: #D3D1C7;
+    --gray-50:  #F1EFE8;
+    --bg: #f7f8fc;
+    --card: #ffffff;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--gray-900);
+    min-height: 100vh;
+    font-size: 15px;
+  }
+
+  /* ── Lock Screen ── */
+  #lockScreen {
+    position: fixed; inset: 0; background: var(--blue-900);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 9999; padding: 2rem;
+  }
+  #lockScreen .logo-wrap {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 2rem;
+  }
+  #lockScreen .logo-icon {
+    width: 64px; height: 64px; background: var(--blue-600);
+    border-radius: 18px; display: flex; align-items: center; justify-content: center;
+  }
+  #lockScreen .logo-icon svg { width: 36px; height: 36px; fill: #fff; }
+  #lockScreen h1 { color: #fff; font-size: 2rem; font-weight: 700; }
+  #lockScreen p { color: var(--blue-200); font-size: 0.9rem; margin-bottom: 2rem; text-align: center; }
+  #lockScreen .lock-card {
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: var(--radius); padding: 2rem; width: 100%; max-width: 360px;
+  }
+  #lockScreen label { color: var(--blue-100); font-size: 0.85rem; display: block; margin-bottom: 6px; }
+  #lockScreen input {
+    width: 100%; padding: 12px 14px; border-radius: var(--radius-sm);
+    border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1);
+    color: #fff; font-size: 1rem; outline: none; margin-bottom: 1rem;
+    letter-spacing: 0.2em;
+  }
+  #lockScreen input::placeholder { color: rgba(255,255,255,0.35); letter-spacing: normal; }
+  #lockScreen input:focus { border-color: var(--blue-200); }
+  #lockScreen .btn-unlock {
+    width: 100%; padding: 13px; background: var(--blue-400); color: #fff;
+    border: none; border-radius: var(--radius-sm); font-size: 1rem;
+    font-weight: 600; cursor: pointer; transition: background 0.2s;
+  }
+  #lockScreen .btn-unlock:hover { background: var(--blue-600); }
+  #lockErr { color: #f87171; font-size: 0.85rem; text-align: center; margin-top: 8px; min-height: 20px; }
+  #lockScreen .hint { color: rgba(255,255,255,0.35); font-size: 0.78rem; text-align: center; margin-top: 1.5rem; }
+
+  /* ── Main App ── */
+  #app { display: none; max-width: 700px; margin: 0 auto; padding-bottom: 80px; }
+
+  /* Header */
+  .app-header {
+    background: var(--blue-900); color: #fff;
+    padding: 1rem 1.25rem; display: flex; align-items: center; gap: 10px;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .app-header .hlogo {
+    width: 36px; height: 36px; background: var(--blue-600);
+    border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .app-header .hlogo svg { width: 20px; height: 20px; fill: #fff; }
+  .app-header h1 { font-size: 1.2rem; font-weight: 700; flex: 1; }
+  .app-header .btn-lock {
+    background: rgba(255,255,255,0.12); border: none; color: #fff;
+    padding: 7px 14px; border-radius: 8px; font-size: 0.8rem; cursor: pointer;
+  }
+  .btn-save-all {
+    background: var(--teal-400); color: #fff; border: none;
+    padding: 7px 14px; border-radius: 8px; font-size: 0.8rem;
+    cursor: pointer; font-weight: 600; margin-right: 6px;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex; overflow-x: auto; background: var(--card);
+    border-bottom: 1.5px solid var(--gray-100);
+    -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex: 0 0 auto; padding: 13px 18px; font-size: 0.82rem; font-weight: 600;
+    color: var(--gray-600); cursor: pointer; border-bottom: 2.5px solid transparent;
+    white-space: nowrap; transition: all 0.2s;
+  }
+  .tab.active { color: var(--blue-600); border-bottom-color: var(--blue-600); }
+  .tab:hover { color: var(--blue-800); }
+
+  /* Section panels */
+  .panel { display: none; padding: 1.25rem; }
+  .panel.active { display: block; }
+
+  /* Cards */
+  .card {
+    background: var(--card); border-radius: var(--radius);
+    border: 1px solid var(--gray-100); padding: 1.25rem; margin-bottom: 1rem;
+  }
+  .card-title {
+    font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--gray-600); margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .card-title .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+  .dot-blue  { background: var(--blue-400); }
+  .dot-red   { background: var(--red-400); }
+  .dot-teal  { background: var(--teal-400); }
+  .dot-amber { background: var(--amber-400); }
+
+  /* Form fields */
+  .field { margin-bottom: 0.9rem; }
+  .field:last-child { margin-bottom: 0; }
+  .field label {
+    display: block; font-size: 0.8rem; font-weight: 600;
+    color: var(--gray-600); margin-bottom: 4px;
+  }
+  .field input, .field textarea, .field select {
+    width: 100%; padding: 10px 12px; border: 1.5px solid var(--gray-100);
+    border-radius: var(--radius-sm); font-size: 0.95rem; color: var(--gray-900);
+    background: #fff; outline: none; transition: border-color 0.2s;
+    font-family: inherit;
+  }
+  .field textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+  .field input:focus, .field textarea:focus, .field select:focus {
+    border-color: var(--blue-400);
+  }
+  .field .blood-btns {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px;
+  }
+  .blood-btn {
+    padding: 7px 14px; border: 1.5px solid var(--gray-100);
+    border-radius: 20px; font-size: 0.85rem; font-weight: 600;
+    cursor: pointer; background: #fff; color: var(--gray-900); transition: all 0.18s;
+  }
+  .blood-btn.sel { background: var(--red-400); border-color: var(--red-400); color: #fff; }
+
+  /* Emergency contacts */
+  .ec-item {
+    background: var(--red-50); border-radius: var(--radius-sm);
+    padding: 0.9rem; margin-bottom: 0.8rem; border: 1px solid #fecaca;
+  }
+  .ec-item:last-child { margin-bottom: 0; }
+  .ec-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .ec-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+  }
+  .ec-label { font-size: 0.8rem; font-weight: 700; color: var(--red-600); }
+  .btn-rm {
+    background: none; border: 1px solid #fca5a5; color: var(--red-600);
+    border-radius: 6px; padding: 3px 10px; font-size: 0.78rem; cursor: pointer;
+  }
+  .btn-add-ec {
+    display: flex; align-items: center; gap: 6px; padding: 10px 16px;
+    background: var(--red-50); border: 1.5px dashed #fca5a5;
+    border-radius: var(--radius-sm); cursor: pointer; font-size: 0.85rem;
+    font-weight: 600; color: var(--red-600); width: 100%; margin-top: 0.8rem;
+  }
+
+  /* Custom fields */
+  .custom-item {
+    display: grid; grid-template-columns: 1fr 1fr auto;
+    gap: 8px; margin-bottom: 8px; align-items: end;
+  }
+  .btn-rm-cf {
+    background: none; border: 1px solid var(--gray-100); color: var(--gray-600);
+    border-radius: 6px; padding: 9px 12px; font-size: 0.9rem; cursor: pointer;
+    height: 40px;
+  }
+  .btn-add-cf {
+    display: flex; align-items: center; gap: 6px; padding: 10px 16px;
+    background: var(--blue-50); border: 1.5px dashed var(--blue-200);
+    border-radius: var(--radius-sm); cursor: pointer; font-size: 0.85rem;
+    font-weight: 600; color: var(--blue-600); width: 100%; margin-top: 0.5rem;
+  }
+
+  /* Toast */
+  #toast {
+    position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--gray-900); color: #fff; padding: 10px 20px;
+    border-radius: 30px; font-size: 0.85rem; opacity: 0; transition: all 0.3s;
+    pointer-events: none; z-index: 9000; white-space: nowrap;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* Bottom bar */
+  .bottom-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--card); border-top: 1px solid var(--gray-100);
+    padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;
+    max-width: 700px; margin: 0 auto;
+  }
+  .bottom-bar .info { font-size: 0.75rem; color: var(--gray-600); }
+
+  /* Print / export helper */
+  @media print {
+    #lockScreen { display: none !important; }
+    .app-header, .tabs, .bottom-bar { display: none; }
+    #app { display: block !important; max-width: 100%; }
+    .panel { display: block !important; }
+  }
+
+  /* Install banner */
+  #installBanner {
+    background: var(--blue-50); border-bottom: 1px solid var(--blue-100);
+    padding: 10px 16px; font-size: 0.82rem; color: var(--blue-800);
+    display: none; align-items: center; gap: 10px;
+  }
+  #installBanner button {
+    margin-left: auto; padding: 6px 14px; background: var(--blue-600);
+    color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 0.8rem;
+  }
+  #installBanner .close-btn {
+    background: none; color: var(--gray-600); padding: 4px; font-size: 1rem;
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ LOCK SCREEN ═══ -->
+<div id="lockScreen">
+  <div class="logo-wrap">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 2C9.38 2 7 3.56 7 6v1H5a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1h-2V6c0-2.44-2.38-4-5-4zm0 2c1.93 0 3 1.02 3 2v1H9V6c0-.98 1.07-2 3-2zm1 9.73V15a1 1 0 0 1-2 0v-1.27A2 2 0 0 1 10 12a2 2 0 0 1 4 0 2 2 0 0 1-1 1.73z"/></svg>
+    </div>
+    <h1>MyData</h1>
+  </div>
+  <p>Your personal &amp; emergency info,<br>secure and always with you.</p>
+  <div class="lock-card">
+    <label for="pwInput">Enter your password</label>
+    <input type="password" id="pwInput" placeholder="••••••••" autocomplete="current-password" maxlength="50">
+    <button class="btn-unlock" onclick="unlock()">Unlock →</button>
+    <div id="lockErr"></div>
+    <p class="hint">First time? Enter any password to set it.<br>Default: <strong style="color:var(--blue-200)">mydata123</strong></p>
+  </div>
+</div>
+
+<!-- ═══ INSTALL BANNER ═══ -->
+<div id="installBanner">
+  📲 Install MyData on your home screen for offline access.
+  <button id="installBtn">Install</button>
+  <button class="close-btn" onclick="document.getElementById('installBanner').style.display='none'">✕</button>
+</div>
+
+<!-- ═══ MAIN APP ═══ -->
+<div id="app">
+  <div class="app-header">
+    <div class="hlogo">
+      <svg viewBox="0 0 24 24"><path d="M12 2C9.38 2 7 3.56 7 6v1H5a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1h-2V6c0-2.44-2.38-4-5-4zm0 2c1.93 0 3 1.02 3 2v1H9V6c0-.98 1.07-2 3-2zm1 9.73V15a1 1 0 0 1-2 0v-1.27A2 2 0 0 1 10 12a2 2 0 0 1 4 0 2 2 0 0 1-1 1.73z"/></svg>
+    </div>
+    <h1>MyData</h1>
+    <button class="btn-save-all" onclick="saveAll()">💾 Save</button>
+    <button class="btn-lock" onclick="lockApp()">🔒 Lock</button>
+  </div>
+
+  <div class="tabs" id="tabBar">
+    <div class="tab active" data-tab="personal" onclick="switchTab('personal')">👤 Personal</div>
+    <div class="tab" data-tab="medical" onclick="switchTab('medical')">🏥 Medical</div>
+    <div class="tab" data-tab="emergency" onclick="switchTab('emergency')">🆘 Emergency</div>
+    <div class="tab" data-tab="docs" onclick="switchTab('docs')">📋 Documents</div>
+    <div class="tab" data-tab="notes" onclick="switchTab('notes')">📝 Notes</div>
+    <div class="tab" data-tab="custom" onclick="switchTab('custom')">➕ Custom</div>
+  </div>
+
+  <!-- ── Personal ── -->
+  <div class="panel active" id="panel-personal">
+    <div class="card">
+      <div class="card-title"><span class="dot dot-blue"></span> Basic Information</div>
+      <div class="field"><label>Full Name</label><input type="text" id="fullName" placeholder="e.g. Rajan Kumar"></div>
+      <div class="field"><label>Date of Birth</label><input type="date" id="dob"></div>
+      <div class="field"><label>Gender</label>
+        <select id="gender">
+          <option value="">Select…</option>
+          <option>Male</option><option>Female</option><option>Non-binary</option><option>Prefer not to say</option>
+        </select>
+      </div>
+      <div class="field"><label>Nationality</label><input type="text" id="nationality" placeholder="e.g. Indian"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot dot-blue"></span> Contact</div>
+      <div class="field"><label>Mobile Number (Primary)</label><input type="tel" id="phone1" placeholder="+91 XXXXX XXXXX"></div>
+      <div class="field"><label>Mobile Number (Secondary)</label><input type="tel" id="phone2" placeholder="+91 XXXXX XXXXX"></div>
+      <div class="field"><label>Email Address</label><input type="email" id="email" placeholder="you@example.com"></div>
+      <div class="field"><label>Home Address</label><textarea id="address" placeholder="Full address including city, state, PIN"></textarea></div>
+    </div>
+  </div>
+
+  <!-- ── Medical ── -->
+  <div class="panel" id="panel-medical">
+    <div class="card">
+      <div class="card-title"><span class="dot dot-red"></span> Blood Group</div>
+      <div class="field">
+        <div class="blood-btns" id="bloodBtns">
+          <button class="blood-btn" data-bg="A+">A+</button>
+          <button class="blood-btn" data-bg="A−">A−</button>
+          <button class="blood-btn" data-bg="B+">B+</button>
+          <button class="blood-btn" data-bg="B−">B−</button>
+          <button class="blood-btn" data-bg="AB+">AB+</button>
+          <button class="blood-btn" data-bg="AB−">AB−</button>
+          <button class="blood-btn" data-bg="O+">O+</button>
+          <button class="blood-btn" data-bg="O−">O−</button>
+        </div>
+      </div>
+      <input type="hidden" id="bloodGroup">
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot dot-red"></span> Medical IDs &amp; Contacts</div>
+      <div class="field"><label>Hospital Patient Number</label><input type="text" id="hospitalNum" placeholder="Your patient ID / file number"></div>
+      <div class="field"><label>NHS / Health Insurance Number</label><input type="text" id="insuranceNum" placeholder="e.g. AB 12 34 56 C"></div>
+      <div class="field"><label>Doctor / GP Name</label><input type="text" id="doctorName" placeholder="Dr. "></div>
+      <div class="field"><label>Doctor / GP Phone</label><input type="tel" id="doctorPhone" placeholder="+91 XXXXX XXXXX"></div>
+      <div class="field"><label>Hospital Name</label><input type="text" id="hospitalName" placeholder="Your registered hospital"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot dot-red"></span> Health Details</div>
+      <div class="field"><label>Known Allergies</label><textarea id="allergies" placeholder="e.g. Penicillin, Peanuts, Latex…"></textarea></div>
+      <div class="field"><label>Current Medications</label><textarea id="medications" placeholder="List medicines with doses…"></textarea></div>
+      <div class="field"><label>Chronic Conditions / Disabilities</label><textarea id="conditions" placeholder="e.g. Diabetes Type 2, Asthma…"></textarea></div>
+      <div class="field"><label>Organ Donor?</label>
+        <select id="organDonor">
+          <option value="">Not specified</option>
+          <option>Yes – registered donor</option>
+          <option>No</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Emergency ── -->
+  <div class="panel" id="panel-emergency">
+    <div class="card" style="background: var(--red-50); border-color: #fecaca;">
+      <div class="card-title"><span class="dot dot-red"></span> Emergency Numbers</div>
+      <div class="field"><label>Ambulance (local number)</label><input type="tel" id="ambulanceNum" placeholder="e.g. 108 / 999 / 911"></div>
+      <div class="field"><label>Police</label><input type="tel" id="policeNum" placeholder="e.g. 100 / 999"></div>
+      <div class="field"><label>Fire Brigade</label><input type="tel" id="fireNum" placeholder="e.g. 101 / 999"></div>
+      <div class="field"><label>Poison Control</label><input type="tel" id="poisonNum" placeholder="e.g. 1800-116-117"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot dot-red"></span> Emergency Family Contacts</div>
+      <div id="ecList"></div>
+      <button class="btn-add-ec" onclick="addEC()">+ Add Emergency Contact</button>
+    </div>
+  </div>
+
+  <!-- ── Documents ── -->
+  <div class="panel" id="panel-docs">
+    <div class="card">
+      <div class="card-title"><span class="dot dot-teal"></span> Identity Documents</div>
+      <div class="field"><label>Passport Number</label><input type="text" id="passport" placeholder="e.g. J1234567"></div>
+      <div class="field"><label>Passport Expiry Date</label><input type="date" id="passportExp"></div>
+      <div class="field"><label>National ID / Aadhaar / NIC</label><input type="text" id="nationalId" placeholder="National ID number"></div>
+      <div class="field"><label>Driving Licence Number</label><input type="text" id="drivingLic" placeholder="DL number"></div>
+      <div class="field"><label>Driving Licence Expiry</label><input type="date" id="drivingExp"></div>
+      <div class="field"><label>PAN / Tax ID</label><input type="text" id="taxId" placeholder="e.g. ABCDE1234F"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot dot-teal"></span> Insurance</div>
+      <div class="field"><label>Health Insurance Number</label><input type="text" id="healthIns" placeholder="Policy number"></div>
+      <div class="field"><label>Health Insurance Provider</label><input type="text" id="healthInsProvider" placeholder="Insurance company name"></div>
+      <div class="field"><label>Health Insurance Helpline</label><input type="tel" id="healthInsPhone" placeholder="Claim / emergency number"></div>
+      <div class="field"><label>Life Insurance Policy Number</label><input type="text" id="lifeIns" placeholder="Policy number"></div>
+      <div class="field"><label>Vehicle Insurance Number</label><input type="text" id="vehicleIns" placeholder="Policy number"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot dot-teal"></span> Financial</div>
+      <div class="field"><label>Bank Name</label><input type="text" id="bankName" placeholder="Primary bank"></div>
+      <div class="field"><label>Bank Account (last 4 digits only)</label><input type="text" id="bankAcc" maxlength="4" placeholder="XXXX"></div>
+      <div class="field"><label>Bank Emergency Phone</label><input type="tel" id="bankPhone" placeholder="Bank helpline"></div>
+    </div>
+  </div>
+
+  <!-- ── Notes ── -->
+  <div class="panel" id="panel-notes">
+    <div class="card">
+      <div class="card-title"><span class="dot dot-amber"></span> Personal Notes</div>
+      <div class="field"><label>General Notes</label><textarea id="notes1" style="min-height:140px" placeholder="Anything important to remember…"></textarea></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot dot-amber"></span> Medical Notes</div>
+      <div class="field"><label>For Medical Staff</label><textarea id="notesMedical" style="min-height:120px" placeholder="Special instructions for doctors or paramedics in an emergency…"></textarea></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot dot-amber"></span> Travel Notes</div>
+      <div class="field"><label>Visa / Entry Info</label><textarea id="notesTravel" style="min-height:100px" placeholder="Visa numbers, travel insurance, hotel emergency contacts…"></textarea></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot dot-amber"></span> Other Notes</div>
+      <div class="field"><label>Any other important information</label><textarea id="notesOther" style="min-height:100px" placeholder="Pet care instructions, home security, trusted neighbours…"></textarea></div>
+    </div>
+  </div>
+
+  <!-- ── Custom Fields ── -->
+  <div class="panel" id="panel-custom">
+    <div class="card">
+      <div class="card-title"><span class="dot dot-blue"></span> Your Custom Fields</div>
+      <p style="font-size:0.83rem; color:var(--gray-600); margin-bottom:1rem;">Add any extra information you want to store — label it anything you like.</p>
+      <div id="customList"></div>
+      <button class="btn-add-cf" onclick="addCustomField()">+ Add a Custom Field</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast">✓ Data saved</div>
+
+<!-- Bottom bar -->
+<div class="bottom-bar" id="bottomBar" style="display:none">
+  <span class="info">🔒 Stored locally on this device only</span>
+  <span class="info" id="lastSaved"></span>
+</div>
+
+<script>
+// ── Password ──
+const DEFAULT_PW = 'mydata123';
+function unlock() {
+  const input = document.getElementById('pwInput').value;
+  const stored = localStorage.getItem('mydata_pw') || DEFAULT_PW;
+  if (!input) { document.getElementById('lockErr').textContent = 'Please enter a password.'; return; }
+  if (!localStorage.getItem('mydata_pw')) { localStorage.setItem('mydata_pw', input); }
+  if (input === (localStorage.getItem('mydata_pw') || DEFAULT_PW)) {
+    document.getElementById('lockScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('bottomBar').style.display = 'flex';
+    loadAll();
+    updateLastSaved();
+  } else {
+    document.getElementById('lockErr').textContent = 'Incorrect password. Please try again.';
+    document.getElementById('pwInput').value = '';
+  }
+}
+document.getElementById('pwInput').addEventListener('keydown', e => { if (e.key === 'Enter') unlock(); });
+function lockApp() {
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('bottomBar').style.display = 'none';
+  document.getElementById('lockScreen').style.display = 'flex';
+  document.getElementById('pwInput').value = '';
+  document.getElementById('lockErr').textContent = '';
+}
+
+// ── Tabs ──
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + name));
+}
+
+// ── Blood Group ──
+document.getElementById('bloodBtns').addEventListener('click', e => {
+  if (e.target.classList.contains('blood-btn')) {
+    document.querySelectorAll('.blood-btn').forEach(b => b.classList.remove('sel'));
+    e.target.classList.add('sel');
+    document.getElementById('bloodGroup').value = e.target.dataset.bg;
+  }
+});
+
+// ── Emergency Contacts ──
+let ecCount = 0;
+function addEC(data) {
+  ecCount++;
+  const id = 'ec' + ecCount;
+  const d = data || {};
+  const div = document.createElement('div');
+  div.className = 'ec-item';
+  div.id = id;
+  div.innerHTML = `
+    <div class="ec-header">
+      <span class="ec-label">Contact ${ecCount}</span>
+      <button class="btn-rm" onclick="document.getElementById('${id}').remove(); saveAll();">Remove</button>
+    </div>
+    <div class="field"><label>Name</label><input type="text" class="ec-name" value="${d.name||''}" placeholder="Contact's full name"></div>
+    <div class="ec-row">
+      <div class="field"><label>Relationship</label><input type="text" class="ec-rel" value="${d.rel||''}" placeholder="e.g. Spouse"></div>
+      <div class="field"><label>Phone</label><input type="tel" class="ec-phone" value="${d.phone||''}" placeholder="+91 XXXXX XXXXX"></div>
+    </div>
+    <div class="field"><label>Alternative Phone</label><input type="tel" class="ec-phone2" value="${d.phone2||''}" placeholder="Optional second number"></div>
+  `;
+  document.getElementById('ecList').appendChild(div);
+}
+
+// ── Custom Fields ──
+let cfCount = 0;
+function addCustomField(data) {
+  cfCount++;
+  const id = 'cf' + cfCount;
+  const d = data || {};
+  const div = document.createElement('div');
+  div.className = 'custom-item';
+  div.id = id;
+  div.innerHTML = `
+    <div class="field" style="margin:0"><label style="font-size:0.75rem">Label</label><input type="text" class="cf-label" value="${d.label||''}" placeholder="Field name"></div>
+    <div class="field" style="margin:0"><label style="font-size:0.75rem">Value</label><input type="text" class="cf-value" value="${d.value||''}" placeholder="Value"></div>
+    <button class="btn-rm-cf" onclick="document.getElementById('${id}').remove(); saveAll();">✕</button>
+  `;
+  document.getElementById('customList').appendChild(div);
+}
+
+// ── Save & Load ──
+const FIELDS = ['fullName','dob','gender','nationality','phone1','phone2','email','address',
+  'bloodGroup','hospitalNum','insuranceNum','doctorName','doctorPhone','hospitalName',
+  'allergies','medications','conditions','organDonor',
+  'ambulanceNum','policeNum','fireNum','poisonNum',
+  'passport','passportExp','nationalId','drivingLic','drivingExp','taxId',
+  'healthIns','healthInsProvider','healthInsPhone','lifeIns','vehicleIns',
+  'bankName','bankAcc','bankPhone',
+  'notes1','notesMedical','notesTravel','notesOther'];
+
+function saveAll() {
+  const data = {};
+  FIELDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) data[id] = el.value;
+  });
+  // Blood group
+  data.bloodGroup = document.getElementById('bloodGroup').value;
+  // Emergency contacts
+  const ecs = [];
+  document.querySelectorAll('.ec-item').forEach(ec => {
+    ecs.push({
+      name: ec.querySelector('.ec-name').value,
+      rel: ec.querySelector('.ec-rel').value,
+      phone: ec.querySelector('.ec-phone').value,
+      phone2: ec.querySelector('.ec-phone2').value,
+    });
+  });
+  data._ecs = ecs;
+  // Custom fields
+  const cfs = [];
+  document.querySelectorAll('.custom-item').forEach(cf => {
+    cfs.push({ label: cf.querySelector('.cf-label').value, value: cf.querySelector('.cf-value').value });
+  });
+  data._cfs = cfs;
+  data._saved = new Date().toISOString();
+  localStorage.setItem('mydata_v1', JSON.stringify(data));
+  showToast('Data saved securely ✓');
+  updateLastSaved();
+}
+
+function loadAll() {
+  const raw = localStorage.getItem('mydata_v1');
+  if (!raw) return;
+  const data = JSON.parse(raw);
+  FIELDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && data[id]) el.value = data[id];
+  });
+  // Blood group
+  if (data.bloodGroup) {
+    document.querySelectorAll('.blood-btn').forEach(b => {
+      b.classList.toggle('sel', b.dataset.bg === data.bloodGroup);
+    });
+    document.getElementById('bloodGroup').value = data.bloodGroup;
+  }
+  // ECs
+  if (data._ecs) data._ecs.forEach(ec => addEC(ec));
+  // Custom fields
+  if (data._cfs) data._cfs.forEach(cf => addCustomField(cf));
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function updateLastSaved() {
+  const raw = localStorage.getItem('mydata_v1');
+  if (!raw) return;
+  const d = JSON.parse(raw);
+  if (d._saved) {
+    const dt = new Date(d._saved);
+    document.getElementById('lastSaved').textContent = 'Saved: ' + dt.toLocaleString();
+  }
+}
+
+// Auto-save on change
+document.addEventListener('change', () => saveAll());
+
+// ── PWA / Install ──
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('installBanner').style.display = 'flex';
+});
+document.getElementById('installBtn').addEventListener('click', async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    document.getElementById('installBanner').style.display = 'none';
+  }
+});
+
+// ── Service Worker inline (data URL approach won't work, so skip for file) ──
+// For full PWA, serve via HTTPS with a sw.js file.
+</script>
+
+<!-- PWA Manifest inline -->
+<script>
+const manifest = {
+  name: 'MyData – Personal Info Vault',
+  short_name: 'MyData',
+  start_url: '.',
+  display: 'standalone',
+  background_color: '#042C53',
+  theme_color: '#042C53',
+  icons: [{
+    src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%23185FA5'/%3E%3Cpath fill='white' d='M96 28c-21 0-38 12.4-38 32v8H38a8 8 0 0 0-8 8v88a8 8 0 0 0 8 8h116a8 8 0 0 0 8-8V76a8 8 0 0 0-8-8h-20v-8c0-19.6-17-32-38-32zm0 16c14 0 22 7.4 22 16v8H74v-8c0-8.6 8-16 22-16zm8 73.8V132a8 8 0 0 1-16 0v-14.2A16 16 0 0 1 80 104a16 16 0 0 1 32 0 16 16 0 0 1-8 13.8z'/%3E%3C/svg%3E",
+    sizes: '192x192', type: 'image/svg+xml'
+  }]
+};
+const blob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
+const url = URL.createObjectURL(blob);
+const link = document.createElement('link');
+link.rel = 'manifest'; link.href = url;
+document.head.appendChild(link);
+</script>
+
+</body>
+</html>
